@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>kinda sad mood rn atm ngl</title>
+        <style>
+            * {
+                margin: 0;
+                overflow: hidden;
+            }
+            #block {
+                width: 100vw;
+                height: 100vh;
+                background: #FFF;
+                position: fixed;
+                left: 0;
+                top: 0;
+                opacity: 40%;
+                z-index: 1000;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='c'></div>
+        <div id='block'>plz wait</div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/mbebenita/Broadway@0.1.0/Player/Decoder.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/mbebenita/Broadway@0.1.0/Player/WebGLCanvas.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/mbebenita/Broadway@0.1.0/Player/Player.js"></script>
+        <script>
+            var Stream = (function stream() {
+                function constructor(locs) {
+                    this.urls = locs.split(',');
+                }
+                constructor.prototype = {
+                    readAll: function(progress, complete) {
+                        /*var xhr = new XMLHttpRequest();
+                        var async = true;
+                        xhr.open("GET", this.url, async);
+                        xhr.responseType = "arraybuffer";
+                        if (progress) {
+                            xhr.onprogress = function (event) {
+                                progress(xhr.response, event.loaded, event.total);
+                            };
+                        }
+                        xhr.onreadystatechange = function (event) {
+                            if (xhr.readyState === 4) {
+                                console.log(xhr.response);
+                                complete(xhr.response);
+                            }
+                        }
+                        xhr.send(null);*/
+                        this.list = [];
+                        while(this.urls.length){
+                            this.list.push(g(this.urls.splice(0, 1)[0]));
+                        }
+                        Promise.all(this.list).then(b64tB_array).then(complete);
+                    }
+                };
+                return constructor;
+            })();
+        </script>
+        <script src="https://cdn.jsdelivr.net/gh/mbebenita/Broadway@0.1.0/Player/mp4.js"></script>
+        <script>
+            MP4Player.prototype.play = function() {
+                var reader = this.reader;
+                if (!reader) {
+                    this.readAll(this.play.bind(this));
+                    return;
+                };
+                var video = reader.tracks[1];
+                var audio = reader.tracks[2];
+                var avc = reader.tracks[1].trak.mdia.minf.stbl.stsd.avc1.avcC;
+                var sps = avc.sps[0];
+                var pps = avc.pps[0];
+                this.avc.decode(sps);
+                this.avc.decode(pps);
+                var pic = 0;
+                var frames = 0;
+                snd.start(0);
+                var start = ac.currentTime;
+                setTimeout(function foo() {
+                    var avc = this.avc;
+                    video.getSampleNALUnits(pic).forEach(function(nal) {
+                        avc.decode(nal);
+                    });
+                    pic++;
+                    frames++;
+                    if (pic < 3000) {
+                        setTimeout(foo.bind(this), (frames/24-(ac.currentTime-start))*1000);
+                    };
+                }.bind(this), 1);
+                setInterval(function(){
+                    console.log("frameCount: %s\nframe's Time: %s\nac.currentTime: %s", frames, frames/24, ac.currentTime-start);
+                }, 1000);
+            }
+        </script>
+        <script>
+            var ac = new (window.AudioContext || window.webkitAudioContext)();
+            var snd, snd_ready;
+            function g(loc){
+                console.log("g(%s) called", loc);
+                return new Promise(function(res){
+                    $.getJSON("https://www.khanacademy.org/api/labs/scratchpads/" + loc + "?callback=?", function(data){
+                        console.log("Loaded data from %s", loc);
+                        var s = data.revision.code;
+                        res(s);
+                    });
+                });
+            }
+            function loadAudio(urls){
+                this.list = [];
+                while(urls.length){
+                    this.list.push(g(urls.splice(0, 1)[0]));
+                }
+                Promise.all(this.list).then(b64tB_array).then(function(buffer){
+                    ac.decodeAudioData(buffer, function (decodedData) {
+                        snd = ac.createBufferSource();
+                        snd.buffer = decodedData;
+                        snd.loop = false;
+                        snd.connect(ac.destination);
+                        snd_ready = true;
+                        console.log("Audio ready");
+                        // window.alert("It is now \"OK\", now you can click the canvas (once) to start the video");
+                        document.body.removeChild(document.getElementById('block'));
+                    });
+                });
+            }
+            function b64tB_array(strs){
+                this.str = strs.join('');
+                console.log(this.str.length)
+                return base64ToBufferAsync(this.str);
+            }
+            function base64ToBufferAsync(buffer) {
+                var binary = window.atob(buffer);
+                var buffer = new ArrayBuffer(binary.length);
+                return new Promise(function(res){
+                    var bytes = new Uint8Array(buffer);
+                    var i = 0;
+                    var int = setInterval(function(){
+                        for (var j = 0; j < 640000; j ++) {
+                            if(i >= buffer.byteLength-1){
+                                clearInterval(int);
+                                res(buffer);
+                                break;
+                            }
+                            bytes[i] = binary.charCodeAt(i) & 0xFF;
+                            i ++;
+                        }
+                    }, 1); // dumb
+                });
+            };
+            (function(){
+                const d = document.getElementById('c');
+                d.setAttribute('src', "6656270042218496,5211098607599616,6054640720625664,5507561090793472,6446673859788800,6306599675445248,6281432039505920,6481084265349120,6230074028539904,5096368253517824,6510419579846656,5453027471605760,4868905342681088,5495786521837568,4870950082658304,4597457973755904,6289196367298560,5065308425764864,6115129093865472,6195484475867136,6013605596446720,5560298037919744,6094056172371968,5020677776424960,6130624564117504,4924165935415296,5585179051900928,6536687952150528,4931066270138368,5013869615726592,5392111480684544,4596924726722560,6382072484937728,6445042376196096,5900997056872448,6463959962304512,6753894481084416,5135308490620928,4965669211029504,6617037697007616,5138082234187776,6615464933670912,6096247142563840,6418646513827840,5817107285884928,6267572582694912,6158725763383296,6094280282423296,5007045919326208,4690173365665792,6211868601696256,5622316963020800,5131466457825280,5266487344709632,5938863636037632,6647397612863488,4833124976771072,5974996524810240,6359738017464320,4510882237595648,6220219460960256,6067000898306048,6537582077100032,6649887452381184,4661677029408768,6228250345160704,5343933020585984,6621542463389696,6059988374339584,6316509171630080,4549386183196672,5938787266150400,5947492158226432,4849202448646144,5181717071872000,6105803008589824,6324723799900160,5198263030726656,6637333900509184,4851281347035136,6009587318996992,5513408135118848,5731969491353600,4804319167987712,4682624356663296,5525370625671168,4608148348682240,6276941919633408,4633533719330816,5188641498677248,6707404412895232,4826119516012544,6146087218135040,4722910025826304,5078274395160576,4766620092547072,6246117073567744,6064570953449472,5255908672487424,4796835455909888,6616258026225664,4643845935808512,4607766767681536,6722056425390080,5332225946370048,5147528024899584,5430081743044608,6339719443333120,6136491925651456,5173081922682880,5258651445313536,5211763555778560,4954760799404032,4608592005382144,4574406548733952,6373102311522304,6648104806072320,4887995868332032,6573241915490304,4540398343372800,4717131231215616,6453906215616512,6253143505846272,6408128038256640,5909027605528576,4798600586805248,4750009373638656,5666331720761344,5076825246351360,4795858820612096,5389511851065344,4908215936827392,5761197414891520,5549651485081600,6623563362942976,5847183331246080,4646285477232640,6131934965350400,5704078577713152");
+                loadAudio("6148809556312064,5055726487945216,5207471440609280,5855778835873792,6387166215487488,5948600997986304,6206465801273344,5226336379813888,5436293071060992,5118720370622464,5413214802493440,4742073364594688,6527601982390272".split(','));
+                console.log(d.attributes.src);
+                var broadway = new Broadway(d);
+                // window.alert("plz wait until you get an \"OK\" popup or things will break");
+            })();
+        </script>
+    </body>
+</html>
