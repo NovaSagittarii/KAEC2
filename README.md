@@ -1,7 +1,4 @@
 Application
-
-Before running the scripts, you need to get a working spin-off POST request from KA first. They were not included since it is sensitive information.
-
 ==============
 ```sh
 ./index.sh $TARGETFILE
